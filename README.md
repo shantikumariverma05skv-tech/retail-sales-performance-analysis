@@ -1,189 +1,187 @@
-# Retail Sales Performance Analysis & Business Insights
+# Retail Sales Performance Analysis & Business Insights (Python)
 
-## Overview
-This project analyzes retail sales data using SQL to evaluate sales performance, identify trends, and generate actionable business insights. The analysis focuses on revenue growth, product performance, and customer purchasing behavior.
+![Python](https://img.shields.io/badge/python-3.10-blue)
+![Status](https://img.shields.io/badge/status-completed-brightgreen)
 
-**Project Status:** Completed
+Analyzing retail sales transaction data to extract actionable business insights on revenue performance, customer behavior, and regional demand.
 
-## Objectives
-- Analyze overall sales performance
-- Identify top-performing products and categories
-- Understand customer purchase patterns
-- Generate insights to support business decision-making
+## Table of Contents
 
-## Tools Used
-- SQL (MySQL / PostgreSQL / SQLite)
-- DB Browser / DBeaver
-
-## Key Skills Demonstrated
-- SQL Joins and Aggregations
-- Business-Oriented Data Analysis
-- Data Modeling and Relationships
-- Insight Generation
-
-## Dataset Description
-
-The dataset represents retail sales transactions and includes:
-
-- Customer details
-
-- Product information
-
-- Order and sales data
-
-- Quantity, price, and order dates
-
-## Database Setup
-Database Name: **`retail_sales_db`**
-### Tables
-
-- customers – Stores customer details (ID, name, contact)
-
-- products – Stores product details (ID, name, category, price, stock)
-
-- orders – Stores sales transactions (order ID, customer ID, product ID, quantity, price, date)
-
-## How to Run the Project
-### 1. Create Database and Tables
-
-```sql
-
-CREATE DATABASE retail_sales_db;
-USE retail_sales_db;
-
-CREATE TABLE customers (
-    customer_id INT PRIMARY KEY,
-    customer_name VARCHAR(100),
-    contact VARCHAR(50)
-);
-
-CREATE TABLE products (
-    product_id INT PRIMARY KEY,
-    product_name VARCHAR(100),
-    category VARCHAR(50),
-    price DECIMAL(10,2),
-    stock INT
-
-);
-
-CREATE TABLE orders (
-    order_id INT PRIMARY KEY,
-    customer_id INT,
-    product_id INT,
-    quantity INT,
-    price DECIMAL(10,2),
-    order_date DATE,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
-);
+- [Objective](#objective)
+- [Tools & Libraries](#tools--libraries)
+- [Dataset](#dataset)
+- [Data Cleaning & Preprocessing](#data-cleaning--preprocessing)
+- [KPI Overview](#kpi-overview)
+- [Insights & Visualizations](#insights--visualizations)
+  - [Top 10 Customers](#top-10-customers)
+  - [Top 10 Products by Sales](#top-10-products-by-sales)
+  - [Sales by Region](#sales-by-region)
+  - [Monthly Sales Trends](#monthly-sales-trends)
+- [Data Challenges & Mitigations](#data-challenges--mitigations)
+- [Key Learnings](#key-learnings)
+- [Skills Demonstrated](#skills-demonstrated)
+- [Conclusion](#conclusion)
+- [How to Run](#how-to-run)
+- [Author & Contact](#author--contact)
 
 
-```
-### 2. Insert Sample Data
+## Objective
 
-``` sql
+To analyze retail sales transaction data and provide actionable insights on revenue performance, customer concentration, and regional demand to support data-driven business decisions.
 
-INSERT INTO customers VALUES
-(1, 'Amit Sharma', 'amit@gmail.com'),
-(2, 'Neha Verma', 'neha@gmail.com'),
-(3, 'Rahul Singh', 'rahul@gmail.com'),
-(4, 'Pooja Mehta', 'pooja@gmail.com');
+## Tools & Libraries
 
-INSERT INTO products VALUES
-(101, 'Laptop', 'Electronics', 55000, 40),
-(102, 'Mobile Phone', 'Electronics', 25000, 80),
-(103, 'Office Chair', 'Furniture', 7000, 30),
-(104, 'Notebook', 'Stationery', 100, 200),
-(105, 'Headphones', 'Electronics', 3000, 60);
+- **Python** for data analysis
+- **Pandas** for data manipulation
+- **NumPy** for numerical operations
+- **Matplotlib** for data visualization
 
+## Dataset
 
-INSERT INTO orders VALUES
-(1001, 1, 101, 1, 55000, '2024-01-05'),
-(1002, 2, 102, 2, 25000, '2024-01-08'),
-(1003, 3, 103, 1, 7000, '2024-01-10'),
-(1004, 1, 104, 10, 100, '2024-01-12'),
-(1005, 4, 105, 3, 3000, '2024-01-15'),
-(1006, 2, 101, 1, 55000, '2024-01-18');
+- **Overview:** Simulated retail transaction dataset representing real-world sales operations.
+- **Contents:** Order-level data including product, customer, region, date, and sales value.
+- **Source:** [Superstore Sales Dataset retrieved from Kaggle](https://www.kaggle.com/datasets)
+
+### Dataset Preview
 
 
-```
-
-## SQL Analysis Queries
-### View All Data
-```sql
-
-SELECT * FROM customers;
-SELECT * FROM products;
-SELECT * FROM orders;
+| Order ID         | Customer Name     | Product          | Region | Order Date | Sales    |
+|-----------------|-----------------|-----------------|--------|------------|---------|
+| CA-2017-152156  | Claire Gute      | Furniture       | South  | 2017-11-11 | 261.96  |
+| CA-2017-138688  | Darrin Van Huff  | Office Supplies | West   | 2017-06-16 | 14.62   |
 
 
-```
+## Data Cleaning & Preprocessing
 
-### Total Sales by Product Category
-```sql
+- Removed duplicate transaction records
+- Handled missing sales and customer values
+- Standardized date formats for time-series analysis
+- Corrected inconsistent column naming
 
-SELECT 
-    p.category,
-    SUM(o.quantity * o.price) AS total_sales
-FROM orders o
-JOIN products p ON o.product_id = p.product_id
-GROUP BY p.category;
+**Insights:**  
+Records with missing sales values were excluded to avoid inaccurate revenue calculations.
+- All other columns have 0 missing values → dataset is clean.
+- Data is ready for further analysis (KPIs, customer/product analysis).
+  
+## KPI Overview
 
+- **Total Revenue:** 2.26M
+- **Total Orders:** 4,922
+- **Total Customers:** 793
+- **Average Order Value:** 459.48
 
-```
-### Total Orders per Customer
-```sql
-SELECT 
-    c.customer_name,
-    COUNT(o.order_id) AS total_orders
-FROM orders o
-JOIN customers c ON o.customer_id = c.customer_id
-GROUP BY c.customer_name;
+These KPIs establish a baseline for evaluating customer purchasing behavior and revenue distribution.
 
+## Insights & Visualizations
 
-```
-### Top 5 Best-Selling Products
+### Top 10 Customers
 
 
-```sql
-SELECT 
-    p.product_name,
-    SUM(o.quantity) AS total_quantity_sold
-FROM orders o
-JOIN products p ON o.product_id = p.product_id
-GROUP BY p.product_name
-ORDER BY total_quantity_sold DESC
-LIMIT 5;
+<img width="643" height="449" alt="03_Top_Customers2" src="https://github.com/user-attachments/assets/32cede25-1cfd-471b-aae9-fd541bedaaed" />
 
 
-```
-### Monthly Sales Trend
-```sql
-SELECT 
-    MONTH(order_date) AS month,
-    SUM(quantity * price) AS monthly_sales
-FROM orders
-GROUP BY MONTH(order_date)
-ORDER BY month;
+**Contribution:**
+**6.8%** of total revenue
+
+**Insight:**
+Low customer concentration risk; revenue is distributed across a broad customer base.
+
+**Business Recommendations:**
+- Implement loyalty programs to retain high-value customers
+- Expand acquisition strategies to reduce over-dependence on a few customers
+
+### Top 10 Products by Sales
 
 
-```
+<img width="512" height="500" alt="04_Top_Products4" src="https://github.com/user-attachments/assets/03c12d69-4f7e-4380-bb23-522eb86ef024" />
 
 
-## Key Business Insights
+ **Insight:**
+ The top 10 products contribute **10.82%** of total revenue, indicating a diversified product portfolio with no excessive dependency on a small set of products. 
+ 
+ **Business Recommendation:**
+- Strengthen inventory planning for top products
+- Diversify promotions to mid-tier products to reduce dependency risk These products can be prioritized for demand forecasting and inventory planning.
 
-- Electronics category generates the highest revenue, indicating strong demand.
+### Sales by Region
 
-- A small group of customers contributes significantly to total sales.
 
-- High-performing products should be prioritized for inventory restocking.
+<img width="533" height="326" alt="05_Region_Sales" src="https://github.com/user-attachments/assets/aba7d083-18ec-41a5-846a-3a8a4a3f31c5" />
 
-- Monthly sales trends can help forecast demand and plan promotions effectively.
+
+**Insight:**
+The South region underperforms compared to East and West, indicating potential pricing, demand, or distribution inefficiencies compared to higher-performing regions.
+
+**Business Recommendation:**
+- Prioritize marketing spend and stock availability in West
+- Investigate low-performing regions for pricing or logistics issues
+
+### Monthly Sales Trends
+
+
+<img width="769" height="434" alt="06_Monthly_Trend2" src="https://github.com/user-attachments/assets/15c18037-989b-42e2-b1c7-1062b613128f" />
+
+
+**Insight:**
+Monthly sales trends reveal fluctuations in demand across periods, with both positive and negative month-over-month growth, highlighting the presence of seasonality and varying customer demand. This analysis supports proactive inventory and promotional planning.
+
+**Business Recommendation:**
+- Align inventory and staffing with peak months
+- Run targeted promotions during low-sales periods to stabilize revenue
+  
+## Data Challenges & Mitigations
+
+- **Missing Values:** Handled missing sales values by excluding records
+- **Inconsistent Formats:** Standardized date formats for consistent time-series analysis
+- **Duplicate Records:** Removed duplicates to ensure accurate KPI calculation
+
+## Key Learnings
+
+- Data cleaning and preprocessing for messy transactional data
+- KPI calculation and business insight generation
+- Data visualization for decision-making support
+- Understanding customer concentration, revenue distribution, and regional performance
+- Translating raw data into actionable business strategies
+
+## Skills Demonstrated
+
+- Python Programming
+- Data Analysis with Pandas & NumPy
+- Data Visualization with Matplotlib
+- KPI computation & business insights
+- Problem-solving with real-world business datasets
 
 ## Conclusion
 
-This project demonstrates the practical application of SQL in retail business analysis. It showcases how structured queries, joins, and aggregations can transform raw transaction data into meaningful insights that support informed decision-making and business strategy.
+This project demonstrates my ability to transform raw transactional data into business-ready insights to support decisions in:
 
-## Author
+- Sales strategy optimization
+- Regional planning
+- Customer management
 
-Shanti Kumari Verma
+## Project Structure
+
+Retail_Sales_Analysis/
+│
+├── Retail_Sales_Analysis.ipynb
+├── data/
+│ └── retail_dataset.csv
+├── images/
+│ ├── top_customers.png
+│ ├── top_products.png
+│ └── sales_by_region.png
+└── README.md
+
+## How to Run
+
+1. Clone this repository
+2. Install required libraries: `pip install pandas numpy matplotlib`
+3. Run `Retail_Sales_Analysis.ipynb` in Jupyter Notebook
+4. Explore outputs and visualizations
+
+## Author & Contact
+
+**Author:** Shanti Kumari Verma  
+**GitHub:** [https://github.com/shantikumariverma05skv-tech](https://github.com/shantikumariverma05skv-tech)  
+**LinkedIn:** [https://www.linkedin.com/in/shantikumariverma05skv-tech](https://www.linkedin.com/in/shantikumariverma05skv-tech)  
+**Role Simulated:** Data Analyst / Business Analyst
