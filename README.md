@@ -158,18 +158,7 @@ This project demonstrates my ability to transform raw transactional data into bu
 - Sales strategy optimization
 - Regional planning
 - Customer management
-
-## Project Structure
-
-Retail_Sales_Analysis/
-│
-├── Retail_Sales_Analysis.ipynb
-├── data/
-│ └── retail_dataset.csv
-├── images/
-│ ├── top_customers.png
-│ ├── top_products.png
-│ └── sales_by_region.png
+n.png
 └── README.md
 
 ## How to Run
